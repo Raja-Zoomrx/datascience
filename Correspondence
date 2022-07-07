@@ -1,0 +1,33 @@
+library("FactoMineR")
+library("factoextra")
+setwd("C:/Users/Rajaraaman J S/Downloads")
+Corres<-read.csv("Corres.csv",header = TRUE)
+Corres<-subset(Corres,select = -Other)
+Corres <- data.frame(Corres, row.names = 1)
+chisq <- chisq.test(Corres)
+chisq
+res.ca <- CA(Corres, graph = FALSE)
+res.ca
+get_eigenvalue(res.ca)
+fviz_ca_biplot(res.ca, repel = TRUE)
+fviz_ca_col(res.ca, repel = TRUE)
+# 3d Plot**
+
+rc = res.ca$row$coord
+cc = res.ca$col$coord
+library(plotly)
+p = plot_ly() 
+p = add_trace(p, x = rc[,1], y = rc[,2], z = rc[,3],
+              mode = 'text', text = rownames(rc),
+              textfont = list(color = "red"), showlegend = FALSE) 
+p = add_trace(p, x = cc[,1], y = cc[,2], z = cc[,3], 
+              mode = "text", text = rownames(cc), 
+              textfont = list(color = "blue"), showlegend = FALSE) 
+p <- config(p, displayModeBar = FALSE)
+p <- layout(p, scene = list(xaxis = list(title = colnames(rc)[1]),
+                            yaxis = list(title = colnames(rc)[2]),
+                            zaxis = list(title = colnames(rc)[3]),
+                            aspectmode = "data"),
+            margin = list(l = 0, r = 0, b = 0, t = 0))
+p$sizingPolicy$browser$padding <- 0
+my.3d.plot = p
